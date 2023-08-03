@@ -4,7 +4,6 @@ require("dotenv").config();
 // set token secret and expiration date
 const secret = process.env.JWT_SECRET_KEY;
 const expiration = '2h';
-
 module.exports = {
   authMiddleware: function ({ req }) {
     let token = req.body.token || req.query.token || req.headers.authorization;
