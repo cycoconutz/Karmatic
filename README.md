@@ -11,7 +11,7 @@
 
 Karmatic is a hub for communities to come together and help each other by volunteering assistance and posting requests for help. You earn karma by helping your community. Karmatic is a free service designed to make good deeds easier! It's powered by React.js, MongoDB, and GraphQL <br /> <br />
 
-<!-- redeploy2 -->
+<!-- redeploy3 -->
 
 ## Table of Contents:
 
