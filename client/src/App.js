@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ApolloClient,
   InMemoryCache,
@@ -16,6 +16,8 @@ import Dashboard from './pages/Dashboard/Dashboard'
 import Home from './pages/Home/Home';
 import Nav from './GlobalComponents/Nav/Nav';
 import Footer from "./GlobalComponents/Footer/Footer"
+import Auth from './utils/auth';
+import DemoAccountsModal, { DEMO_DISMISS_KEY, demoAccountsWereDismissed } from './GlobalComponents/Modals/DemoAccountsModal';
 
 const httpLink = createHttpLink({
   uri: '/graphql',
@@ -65,6 +67,28 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState('Home');
   const [accessPage, setCurrentAccessPage] = useState('Login')
   const handlePageChange = (page) => setCurrentPage(page);
+
+  // Demo account modal state
+  const [demoOpen, setDemoOpen] = useState(false);
+  const [autoShown, setAutoShown] = useState(false);
+
+  // Show demo account logins once per session for logged-out visitors
+  useEffect(() => {
+    if (Auth.loggedIn()) return;
+    if (autoShown) return;
+    setAutoShown(true);
+    if (demoAccountsWereDismissed()) return;
+    setDemoOpen(true);
+  }, [autoShown]);
+
+  const dismissDemo = () => {
+    try {
+      sessionStorage.setItem(DEMO_DISMISS_KEY, '1');
+    } catch {
+      // storage unavailable — still close
+    }
+    setDemoOpen(false);
+  };
   
   // Renders current page based on user login
   const renderCurrentPage = () => {
@@ -90,8 +114,9 @@ export default function App() {
 
       <ThemeProvider theme={theme}>
         <GlobalStyles />
-        <Nav currentPage={currentPage} handlePageChange={handlePageChange} accessPage={accessPage} setCurrentAccessPage={setCurrentAccessPage} />
+        <Nav currentPage={currentPage} handlePageChange={handlePageChange} accessPage={accessPage} setCurrentAccessPage={setCurrentAccessPage} onOpenDemo={() => setDemoOpen(true)} />
         {renderCurrentPage()}
+        <DemoAccountsModal open={demoOpen} onDismiss={dismissDemo} />
         <Footer />
       </ThemeProvider>
     </ApolloProvider>
